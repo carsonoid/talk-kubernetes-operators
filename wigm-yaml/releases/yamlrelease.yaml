@@ -1,0 +1,92 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wigm-host-yamlrelease
+  labels:
+    app: wigm
+    gif: yamlrelease
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wigm
+      gif: yamlrelease
+  template:
+    metadata:
+      labels:
+        app: wigm
+        gif: yamlrelease
+    spec:
+      containers:
+      - name: gifhost
+        image: nginx:1.15-alpine
+        ports:
+        - containerPort: 80
+        env:
+        - name: GIF_NAME
+          value: yamlrelease
+        - name: GIF_SOURCE_LINK
+          value: https://media.giphy.com/media/JloRBVCgTP6RW/giphy.gif
+        command:
+        - sh
+        - -exc
+        - |
+          # get curl
+          apk update && apk add curl
+
+          # go to data dir
+          cd /usr/share/nginx/html
+
+          # fetch original
+          curl -Lo wigm.gif "$GIF_SOURCE_LINK"
+
+          # write page using heredoc
+          cat > index.html <<EOF
+          <head>
+            <title>WIGM: $GIF_NAME</title>
+          </head>
+          <body>
+            <h1>WIGM: $GIF_NAME</h1>
+            <img src="wigm.gif" />
+          </body>
+          EOF
+
+          # start nginx
+          exec nginx -g "daemon off;"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: wigm-host-yamlrelease
+  labels:
+    app: wigm
+    gif: yamlrelease
+spec:
+  selector:
+    app: wigm
+    gif: yamlrelease
+  # Uncomment line below to request
+  # a cloud LB for the service
+  # type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wigm-host-yamlrelease
+  labels:
+    app: wigm
+    gif: yamlrelease
+spec:
+  rules:
+  - host: yamlrelease.wigm.carson-anderson.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: wigm-host-yamlrelease
+          servicePort: 80

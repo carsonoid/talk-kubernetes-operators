@@ -1,0 +1,19 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: wigm-host-{{ .Release.Name }}
+  labels:
+    app: wigm
+    gif: {{ .Release.Name }}
+spec:
+  selector:
+    app: wigm
+    gif: {{ .Release.Name }}
+  {{ if .Values.service.create_cloud_lb }}
+  type: LoadBalancer
+  {{ end }}
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80

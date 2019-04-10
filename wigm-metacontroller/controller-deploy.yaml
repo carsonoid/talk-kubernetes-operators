@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wigm-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wigm-controller
+  template:
+    metadata:
+      labels:
+        app: wigm-controller
+    spec:
+      containers:
+      - name: controller
+        image: python:2.7
+        command: ["python", "/hooks/controller.py"]
+        volumeMounts:
+        - name: hooks
+          mountPath: /hooks
+      volumes:
+      - name: hooks
+        configMap:
+          name: wigm-controller
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wigm-controller
+spec:
+  selector:
+    app: wigm-controller
+  ports:
+  - port: 80

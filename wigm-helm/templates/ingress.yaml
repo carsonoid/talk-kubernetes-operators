@@ -1,0 +1,19 @@
+{{ if .Values.ingress.enabled }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wigm-host-{{ .Release.Name }}
+  labels:
+    app: wigm
+    gif: {{ .Release.Name }}
+spec:
+  rules:
+  - host: {{ .Release.Name }}.wigm.carson-anderson.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: wigm-host-{{ .Release.Name }}
+          servicePort: 80
+{{ end }}

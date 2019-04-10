@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wigm-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wigm-operator
+  template:
+    metadata:
+      labels:
+        app: wigm-operator
+    spec:
+      serviceAccountName: wigm
+      containers:
+        - name: wigm
+          image: carsonoid/wigm-operator-sdk:v0.0.2
+          ports:
+          - containerPort: 60000
+            name: metrics
+          command:
+          - /usr/local/bin/wigm-operator-sdk
+          imagePullPolicy: Always
+          readinessProbe:
+            exec:
+              command:
+                - stat
+                - /tmp/operator-sdk-ready
+            initialDelaySeconds: 4
+            periodSeconds: 10
+            failureThreshold: 1
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "wigm"

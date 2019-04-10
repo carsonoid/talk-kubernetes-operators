@@ -1,0 +1,9 @@
+gif:
+  name: "Escape!"
+  link: "https://media.giphy.com/media/3o6Mb8Py77B1Bqrrb2/giphy.gif"
+
+service:
+  create_cloud_lb: true
+
+ingress:
+  enabled: false

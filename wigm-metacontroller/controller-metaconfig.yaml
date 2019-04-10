@@ -1,0 +1,26 @@
+apiVersion: metacontroller.k8s.io/v1alpha1
+kind: CompositeController
+metadata:
+  name: wigm-controller
+spec:
+  generateSelector: true
+  parentResource:
+    apiVersion: wigm.carson-anderson.com/v1
+    resource: wigmgifs
+  childResources:
+  - apiVersion: apps/v1
+    resource: deployments
+    updateStrategy:
+      method: InPlace
+  - apiVersion: v1
+    resource: services
+    updateStrategy:
+      method: InPlace
+  - apiVersion: extensions/v1beta1
+    resource: ingresses
+    updateStrategy:
+      method: InPlace
+  hooks:
+    sync:
+      webhook:
+        url: http://wigm-controller.wigm/sync

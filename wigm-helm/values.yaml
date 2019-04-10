@@ -1,0 +1,13 @@
+# Default values for wigm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+gif:
+  name: "" # Defaults to helm stack name
+  link: "" # Required!
+
+service:
+  create_cloud_lb: false
+
+ingress:
+  enabled: true
