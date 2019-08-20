@@ -19,6 +19,8 @@ services:
     - /run
     - /var/run
     privileged: true
+    volumes:
+    - ./images:/var/lib/rancher/k3s/agent/images/
     depends_on:
     - server
     environment:

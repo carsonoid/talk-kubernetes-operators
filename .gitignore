@@ -1,2 +1,3 @@
 vendor/
 kubeconfig.yaml
+*/images/*.tar

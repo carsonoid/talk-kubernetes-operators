@@ -18,6 +18,8 @@ services:
     tmpfs:
     - /run
     - /var/run
+    volumes:
+    - ./images:/var/lib/rancher/k3s/agent/images/
     privileged: true
     depends_on:
     - server
