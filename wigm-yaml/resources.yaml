@@ -25,7 +25,7 @@ spec:
         - containerPort: 80
         env:
         - name: GIF_NAME
-          value: NAME
+          value: TITLE
         - name: GIF_SOURCE_LINK
           value: LINK
         command:
