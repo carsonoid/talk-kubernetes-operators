@@ -24,9 +24,9 @@ spec:
         ports:
         - containerPort: 80
         env:
-        - name: GIF_NAME
-          {{- if .Values.gif.name }}
-          value: {{ .Values.gif.name | quote  }}
+        - name: GIF_TITLE
+          {{- if .Values.gif.title }}
+          value: {{ .Values.gif.title | quote  }}
           {{- else }}
           value: {{ .Release.Name }}
           {{- end }}

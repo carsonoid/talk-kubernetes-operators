@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 gif:
-  name: "" # Defaults to helm stack name
+  title: "" # Defaults to helm stack name
   link: "" # Required!
 
 service:
