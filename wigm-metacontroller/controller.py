@@ -44,7 +44,7 @@ class Controller(BaseHTTPRequestHandler):
     self.wfile.write(json.dumps(desired))
 
   def get_deployment(self, parent, name):
-    gifname = parent["spec"]["gif"].get("name", name)
+    giftitle = parent["spec"]["gif"].get("title", name)
     giflink = parent["spec"]["gif"]["link"]
 
     deployment = {
@@ -84,8 +84,8 @@ class Controller(BaseHTTPRequestHandler):
                 ],
                 "env": [
                   {
-                    "name": "GIF_NAME",
-                    "value": gifname
+                    "name": "GIF_TITLE",
+                    "value": giftitle
                   },
                   {
                     "name": "GIF_SOURCE_LINK",
