@@ -17,7 +17,7 @@ type WigmGifSpec struct {
 }
 
 type GifProperties struct {
-	Name string `json:"name,omitempty"`
+	Title string `json:"title,omitempty"`
 
 	Link string `json:"link"`
 }

@@ -34,6 +34,19 @@
   revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
 
 [[projects]]
+  branch = "master"
+  digest = "1:cdb7d768045f5de336c14bf134b5ce3eac46b11c0fe41d41b6010ef521dd7271"
+  name = "github.com/carsonoid/talk-kubernetes-operators"
+  packages = [
+    "wigm-operator-sdk/pkg/apis",
+    "wigm-operator-sdk/pkg/apis/wigm/v1",
+    "wigm-operator-sdk/pkg/controller",
+    "wigm-operator-sdk/pkg/controller/wigmgif",
+  ]
+  pruneopts = "NT"
+  revision = "0528e4224a64c2628c1edf628c197195b39c4b2e"
+
+[[projects]]
   digest = "1:4b8b5811da6970495e04d1f4e98bb89518cc3cfc3b3f456bdb876ed7b6c74049"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
@@ -806,6 +819,10 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/carsonoid/talk-kubernetes-operators/wigm-operator-sdk/pkg/apis",
+    "github.com/carsonoid/talk-kubernetes-operators/wigm-operator-sdk/pkg/apis/wigm/v1",
+    "github.com/carsonoid/talk-kubernetes-operators/wigm-operator-sdk/pkg/controller",
+    "github.com/carsonoid/talk-kubernetes-operators/wigm-operator-sdk/pkg/controller/wigmgif",
     "github.com/operator-framework/operator-sdk/pkg/k8sutil",
     "github.com/operator-framework/operator-sdk/pkg/leader",
     "github.com/operator-framework/operator-sdk/pkg/ready",

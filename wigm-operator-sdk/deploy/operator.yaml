@@ -15,7 +15,7 @@ spec:
       serviceAccountName: wigm
       containers:
         - name: wigm
-          image: carsonoid/wigm-operator-sdk:v0.0.2
+          image: carsonoid/wigm-operator-sdk:kubecon19
           ports:
           - containerPort: 60000
             name: metrics

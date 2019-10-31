@@ -2,34 +2,18 @@
 
 . ../demo-magic.sh -n
 
-export TYPE_SPEED=60
+export TYPE_SPEED=402
 export DEMO_COMMENT_COLOR=$CYAN
 
-# Use kubectl with explicit config file pointing to this demo's cluster
 export KUBECTL="kubectl --kubeconfig=kubeconfig.yaml"
 
-# ----------------------------- Release
-p "# Do release 1, with DEFAULT business decisions"
-pe "cat > releases/operatorrelease.yaml <<EOF
+# Create New Instance
+p "# Create new instance with a Custom resource"
+pe "cat > releases/operator1.yaml <<EOF
 apiVersion: wigm.carson-anderson.com/v1
 kind: WigmGif
 metadata:
-  name: operatorrelease
-spec:
-  gif:
-    link: https://media.giphy.com/media/3PhKYCVdMi87u/giphy.gif
-EOF"
-wait
-pe "$KUBECTL create -f releases/operatorrelease.yaml"
-wait
-
-# ----------------------------- Release
-p "# Do release 2, with INVERTED business decisions"
-pe "cat > releases/satisfied.yaml <<EOF
-apiVersion: wigm.carson-anderson.com/v1
-kind: WigmGif
-metadata:
-  name: satisfied
+  name: operator1
 spec:
   gif:
     link: https://media.giphy.com/media/l2JegGMtnxw0Nq3pC/giphy.gif
@@ -39,77 +23,72 @@ spec:
     enabled: false
 EOF"
 wait
-pe "$KUBECTL create -f releases/satisfied.yaml"
-wait
-
-
-# ----------------------------- Curl the ingress
-p "# Curl the cluster ingress controller with our wigm hostname"
-pe "NODEIP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' wigm-operator-sdk_node_1)"
-pe "curl -s -H 'Host: operatorrelease.wigm.carson-anderson.com' $NODEIP"
+pe "$KUBECTL apply -f releases/operator1.yaml"
 wait
 
 # ----------------------------- Proxy
-p "# Proxy connection into a release 1 pod. Access at http://localhost:8888"
+p "# Proxy http://localhost:8888 into pod"
 p "# Control-C to kill and continue"
-pe "$KUBECTL port-forward svc/wigm-host-operatorrelease 8888:80"
+pe "$KUBECTL port-forward svc/wigm-host-operator1 8888:80"
 
-# ----------------------------- Upgrade
-p "# Upgrade release 1. Set a better name"
-pe "cat > releases/operatorrelease.yaml <<EOF
+# ----------------------------- Update Title
+p "# Update title"
+pe "cat > releases/operator1.yaml <<EOF
 apiVersion: wigm.carson-anderson.com/v1
 kind: WigmGif
 metadata:
-  name: operatorrelease
+  name: operator1
 spec:
   gif:
-    name: Operators seek state!
-    link: https://media.giphy.com/media/3PhKYCVdMi87u/giphy.gif
+    title: \"Operators are awesome!\"
+    link: https://media.giphy.com/media/l2JegGMtnxw0Nq3pC/giphy.gif
+  service:
+    create_cloud_lb: true
+  ingress:
+    enabled: false
 EOF"
 wait
-pe "$KUBECTL apply -f releases/operatorrelease.yaml"
+pe "$KUBECTL apply -f releases/operator1.yaml"
 wait
 
-# ----------------------------- Curl the ingress
-p "# Curl the cluster ingress controller with our wigm hostname"
-pe "NODEIP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' wigm-operator-sdk_node_1)"
-pe "curl -s -H 'Host: operatorrelease.wigm.carson-anderson.com' $NODEIP"
+
+# ----------------------------- Enable Ingress
+p "# Enable ingress"
+pe "$KUBECTL patch wigmgif operator1 -p '{\"spec\":{\"ingress\":{\"enabled\":true}}}' --type=merge"
 wait
 
 # ----------------------------- Proxy
-p "# Proxy connection into a release 1 pod. Access at http://localhost:8888"
+p "# Check out changes!"
+p "# Proxy http://localhost:8888 into pod"
 p "# Control-C to kill and continue"
-pe "$KUBECTL port-forward svc/wigm-host-operatorrelease 8888:80"
+pe "$KUBECTL port-forward svc/wigm-host-operator1 8888:80"
 
-# ----------------------------- Curl the ingress
-p "# Curl the cluster ingress controller with our release 2 wigm hostname"
-pe "NODEIP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' wigm-operator-sdk_node_1)"
-pe "curl -s -H 'Host: satisfied.wigm.carson-anderson.com' $NODEIP"
+# ----------------------------- Add new release
+p "# Create another instance"
+pe "cat > releases/operator2.yaml <<EOF
+apiVersion: wigm.carson-anderson.com/v1
+kind: WigmGif
+metadata:
+  name: operator2
+spec:
+  gif:
+    title: \"Operators seek state!\"
+    link: https://media.giphy.com/media/3PhKYCVdMi87u/giphy.gif
+  service:
+    create_cloud_lb: false
+  ingress:
+    enabled: false
+EOF"
+wait
+pe "$KUBECTL apply -f releases/operator2.yaml"
 wait
 
-# ----------------------------- Curl the ingress
-p "# Patch the resouce to enable ingress"
-pe "$KUBECTL patch wigmgif satisfied -p '{\"spec\":{\"ingress\":{\"enabled\":true}}}' --type=merge"
+# ----------------------------- Report configuration
+p "# Report configuration"
+pe "$KUBECTL get wigmgif"
 wait
 
-# ----------------------------- Curl the ingress
-p "# Curl the cluster ingress controller with our release 2 wigm hostname"
-pe "NODEIP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' wigm-operator-sdk_node_1)"
-pe "curl -s -H 'Host: satisfied.wigm.carson-anderson.com' $NODEIP"
-wait
-
-# ----------------------------- Break something
-p "# Accidentally break something"
-pe "$KUBECTL delete svc wigm-host-operatorrelease"
-wait
-
-# ----------------------------- Proxy
-p "# Proxy connection into a release 1 pod, Control-C to kill and continue"
-pe "$KUBECTL port-forward svc/wigm-host-operatorrelease 8888:80"
-wait
-
-# ----------------------------- cleanup
-p "# Demo done! Don't forget to clean up!"
-p "# Clean up all wigm releases"
+# ----------------------------- Delete
+p "# Delete"
 pe "$KUBECTL delete wigmgif --all"
 wait

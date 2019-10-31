@@ -45,7 +45,7 @@ func (r *ReconcileWigmGif) syncDeployment(instance *wigmv1.WigmGif) (reconcile.R
 	instance.Status.Deployment = wigmv1.DeploymentStatus{Created: true}
 
 	// Detect a diff in desired ENV variables and update the deployment if they are different
-	if deploymentContainerEnvDiff(deployment, foundDeployment, "gifhost", "GIF_NAME") ||
+	if deploymentContainerEnvDiff(deployment, foundDeployment, "gifhost", "GIF_TITLE") ||
 		deploymentContainerEnvDiff(deployment, foundDeployment, "gifhost", "GIF_LINK") {
 		reqLogger.Info("Env variables have changed. Updating Deployment", "Deployment.Namespace", deployment.Namespace, "Deployment.Name", deployment.Name)
 		err = r.client.Update(context.TODO(), deployment)
@@ -63,9 +63,9 @@ func newDeploymentForWG(wg *wigmv1.WigmGif) *appsv1.Deployment {
 	name := wg.GetName()
 
 	giflink := wg.Spec.Gif.Link
-	gifname := name
-	if wg.Spec.Gif.Name != "" {
-		gifname = wg.Spec.Gif.Name
+	giftitle := name
+	if wg.Spec.Gif.Title != "" {
+		giftitle = wg.Spec.Gif.Title
 	}
 
 	labels := map[string]string{
@@ -102,8 +102,8 @@ func newDeploymentForWG(wg *wigmv1.WigmGif) *appsv1.Deployment {
 							},
 							Env: []corev1.EnvVar{
 								{
-									Name:  "GIF_NAME",
-									Value: gifname,
+									Name:  "GIF_TITLE",
+									Value: giftitle,
 								},
 								{
 									Name:  "GIF_SOURCE_LINK",
@@ -133,10 +133,10 @@ curl -Lo wigm.gif "$GIF_SOURCE_LINK"
 # write page using heredoc
 cat > index.html <<EOF
 <head>
-  <title>WIGM: $GIF_NAME</title>
+  <title>WIGM: $GIF_TITLE</title>
 </head>
 <body>
-  <h1>WIGM: $GIF_NAME</h1>
+  <h1>WIGM: $GIF_TITLE</h1>
   <img src="wigm.gif" />
 </body>
 EOF

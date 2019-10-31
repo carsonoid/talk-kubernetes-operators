@@ -1,8 +1,0 @@
-apiVersion: wigm.carson-anderson.com/v1
-kind: WigmGif
-metadata:
-  name: operator2
-spec:
-  gif:
-    title: Operators seek state!
-    link: https://media.giphy.com/media/3PhKYCVdMi87u/giphy.gif
